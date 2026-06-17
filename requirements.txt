@@ -1,0 +1,16 @@
+fastapi[all]
+uvicorn
+pydantic
+langchain
+langchain-core
+langchain-openai
+langgraph
+
+# 데이터베이스 드라이버 및 툴킷
+oracledb
+pymysql
+psycopg2-binary
+sqlalchemy
+
+# 비동기 파일 I/O (참조 레포 사상 구현용)
+aiofiles
