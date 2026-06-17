@@ -14,3 +14,6 @@ sqlalchemy
 
 # 비동기 파일 I/O (참조 레포 사상 구현용)
 aiofiles
+
+# gemini 추가
+langchain-google-genai
