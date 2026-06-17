@@ -1,4 +1,3 @@
-# app/main.py
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -49,5 +48,5 @@ async def chat_with_agent(request: ChatRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    # uvicorn app.main:app --reload 명령어로도 실행 가능합니다.
-    uvicorn.run("main.py:app", host="0.0.0.0", port=8000, reload=True)
+    # 기존 "main.py:app" 대신 모듈 경로 체계인 "app.main:app"으로 변경합니다.
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
