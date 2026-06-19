@@ -1,5 +1,5 @@
 import os
-#import psycopg2
+import psycopg2
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 #from config import DB_CONFIGS
@@ -31,7 +31,7 @@ tool_node = ToolNode(tools)
 # 2. LLM 모델을 Gemini로 변경
 # 기본적으로 많이 쓰이는 'gemini-1.5-pro' 또는 속도가 빠른 'gemini-1.5-flash'를 추천합니다.
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.5-Flash", 
+    model="gemini-3.5-flash", 
     temperature=0,
     convert_system_message_to_human=True # 시스템 프롬프트 호환성을 위한 옵션
 ).bind_tools(tools)
@@ -44,7 +44,7 @@ def load_system_prompt() -> str:
             print(f"[{key}] 연결 시도 중...")
             try:
                 # 커넥션 스트링을 그대로 넘겨서 엔진 생성 (타임아웃 3초 설정)
-                engine = create_engine(url, connect_args={"connect_timeout": 3} if "postgres" in url or "mysql" in url else {})
+                engine = create_engine(value, connect_args={"connect_timeout": 3} if "postgres" in value or "mysql" in value else {})
                 
                 with engine.connect() as connection:
                     # 각 DB 공통으로 작동하는 표준 SQL 테스트
