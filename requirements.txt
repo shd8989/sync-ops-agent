@@ -17,3 +17,6 @@ aiofiles
 
 # gemini 추가
 langchain-google-genai
+
+# 공통
+python-dotenv
