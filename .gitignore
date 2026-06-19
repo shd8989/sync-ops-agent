@@ -16,3 +16,4 @@ app/workspace_context/sync_history/*.log
 Thumbs.db
 .vscode/
 .idea/
+.env
