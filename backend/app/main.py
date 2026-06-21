@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -14,11 +16,16 @@ app = FastAPI(
 # React 프론트엔드 연동을 위한 CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 실무 환경에서는 구체적인 프론트 주소로 제한 권장 (e.g., http://localhost:5173)
+    allow_origins=["*"],  # TODO. 실무 환경에서는 구체적인 프론트 주소로 제한 권장 (e.g., http://localhost:5173)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 데이터베이스 메타정보 응답 모델
+class DBConnectionInfo(BaseModel):
+    key: str      # 예: DB_DEV_MYSQL
+    driver: str   # 예: mysql, postgresql, oracle
 
 class ChatRequest(BaseModel):
     message: str
@@ -45,6 +52,42 @@ async def chat_with_agent(request: ChatRequest):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/schema/databases", response_model=list[DBConnectionInfo])
+async def get_available_databases():
+    """
+    환경변수에서 DB_로 시작하는 설정을 찾아 활성화된 DB 환경 리스트를 반환합니다.
+    """
+    available_dbs = []
+    
+    for key, value in os.environ.items():
+        if key.startswith("DB_"):
+            # 커넥션 스트링 문자열 분석을 통해 대략적인 드라이버 판별
+            driver_type = "unknown"
+            lower_val = value.lower()
+            
+            if "mysql" in lower_val or "mariadb" in lower_val:
+                driver_type = "mysql"
+            elif "postgresql" in lower_val or "postgres" in lower_val:
+                driver_type = "postgresql"
+            elif "oracle" in lower_val or "thin" in lower_val:
+                driver_type = "oracle"
+                
+            # 프론트엔드 렌더링을 위해 키와 감지된 드라이버 타입 매핑
+            available_dbs.append({
+                "key": key,
+                "driver": driver_type
+            })
+            
+    return available_dbs
+
+# 기존에 연결하려던 스키마 비교 트리거 API 예시
+@app.get("/api/schema/compare")
+async def compare_schema(driver: str, source: str, target: str):
+    # 백엔드 내부적으로 os.environ.get(source), os.environ.get(target) 로 
+    # 실제 커넥션 정보를 가져와 안전하게 스킬(check_schema_tool) 등을 호출할 수 있습니다.
+    # ... 후속 로직 구현 ...
+    return {"status": "success", "detail": f"{source}와 {target} 비교 완료"}
 
 if __name__ == "__main__":
     import uvicorn
